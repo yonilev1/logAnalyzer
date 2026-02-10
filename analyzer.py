@@ -2,6 +2,7 @@ import checks
 import csv
 import pathlib
 import reader
+from collections import Counter
 
 def is_packet_normal(list_of_rows):
     packet_abnormality = []
@@ -12,6 +13,12 @@ def is_packet_normal(list_of_rows):
         else:
             packet_abnormality.append("NORMAL")
     return packet_abnormality
+
+
+def count_ip_references(list_of_rows):
+    #count = {row[1] : 1 for row in list_of_rows}
+    count = Counter(row[1] for row in list_of_rows)
+    return count
 
 
 
