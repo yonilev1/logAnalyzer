@@ -17,3 +17,11 @@ def extract_suspicious_ports(log_list):
         if row[3] in config.SENSITIVE_PORTS:
             suspicious_ports.append(row)
     return suspicious_ports
+
+
+def extract_rows_over_5000_bytes(log_list):
+    overload_row_list = []
+    for row in log_list:
+        if int(row[5]) > config.BYTE_OVERLOAD:
+            overload_row_list.append(row)
+    return overload_row_list
