@@ -21,6 +21,11 @@ def count_ip_references(list_of_rows):
     return count
 
 
+def port_number_to_name(log_list):
+    port_number_name = {row[3] : row[4] for row in log_list}
+    return port_number_name
+
+
 
 
 
