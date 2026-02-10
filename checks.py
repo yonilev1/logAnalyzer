@@ -9,3 +9,11 @@ def extract_external_ip(log_list):
             external_ip_list.append(row[1])
 
     return external_ip_list
+
+
+def extract_suspicious_ports(log_list):
+    suspicious_ports = []
+    for row in log_list:
+        if row[3] in config.SENSITIVE_PORTS:
+            suspicious_ports.append(row)
+    return suspicious_ports
