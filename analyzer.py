@@ -66,19 +66,18 @@ def analyze_all_logs():
     return suspicion_checks
 
 
-def check_rows_suspicions(row):
-    suspicion_checks = analyze_all_logs()
+def check_rows_suspicions(row, suspicion_checks):
     suspicious_names = filter(lambda key: suspicion_checks[key](row), suspicion_checks.keys())
     return list(suspicious_names)
 
-"""def check_all_rows_suspicion_with_more_then_1(list_of_rows):
-    all_suspicions = list(map(lambda row: check_rows_suspicions(row), list_of_rows))
-    get_over_one_sus = list(filter(lambda row: len(row) > 0, all_suspicions))
-    return get_over_one_sus"""
 
-
-def check_all_rows_suspicion_with_more_then_1(line_generator):
+def check_all_rows_suspicion_with_more_then_1(line_generator, suspicion_checks):
     for row in line_generator:
-        is_suspicious = check_rows_suspicions(row)
-        if len(is_suspicious) > 0:
-            yield list(row)
+        if len(check_rows_suspicions(row, suspicion_checks)) > 0:
+            yield row
+
+
+def line_paired_with_suspicions(suspicious_generator, suspicion_checks):
+    for row in suspicious_generator:
+        suspicions = check_rows_suspicions(row, suspicion_checks)
+        yield row, suspicions
