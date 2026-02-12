@@ -62,6 +62,14 @@ def suspicion_recognition_for_ip(list_of_rows):
     return suspicion
 
 
+def get_all_ips_with_at_list_2_suspicion2(sus_map):
+    at_list_2_suspicion2 = []
+    for key, value in sus_map.items():
+        if len(value) >= 2:
+            at_list_2_suspicion2.append(key)
+    return at_list_2_suspicion2
+
+
 
 
 
