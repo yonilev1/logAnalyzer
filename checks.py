@@ -21,3 +21,8 @@ def filter_all_logs_with_sensitive_ports(log_list):
     sensitive_ports = filter(lambda x: x[3] in config.SENSITIVE_PORT, log_list)
     return list(sensitive_ports)
 
+
+def filter_night_activity(log_list):
+    night_activity = filter(lambda x: 0 <= int(x[0][11:13]) < 6, log_list)
+    return list(night_activity)
+
