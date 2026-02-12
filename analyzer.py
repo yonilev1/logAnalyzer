@@ -18,7 +18,6 @@ def is_packet_normal(list_of_rows):
 
 
 def count_ip_references(list_of_rows):
-    #count = {row[1] : 1 for row in list_of_rows}
     count = Counter(row[1] for row in list_of_rows)
     return count
 
@@ -63,10 +62,10 @@ def suspicion_recognition_for_ip(list_of_rows):
 
 
 def get_all_ips_with_at_list_2_suspicion2(sus_map):
-    at_list_2_suspicion2 = []
+    at_list_2_suspicion2 = {}
     for key, value in sus_map.items():
         if len(value) >= 2:
-            at_list_2_suspicion2.append(key)
+            at_list_2_suspicion2[key] = value
     return at_list_2_suspicion2
 
 
