@@ -57,24 +57,34 @@ def convert_size_from_byte_to_kb(list_of_rows):
     return list(kb)
 
 
-def analyze_all_logs(row, external_ips):
-    suspicion_checks = {"EXTERNAL_IP": lambda row: True if row[1] in external_ips else False,
-                        "LARGE_PACKET": lambda row: True if int(row[5]) > 5000 else False,
-                        "SENSITIVE_PORT": lambda row: True if row[3] in config.SENSITIVE_PORT else False,
-                        "NIGHT_ACTIVITY": lambda row: True if 0 <= int(row[0][11:13]) < 6 else False, }
+def analyze_all_logs():
+    suspicion_checks = {"EXTERNAL_IP": lambda row: not row[1].startswith(config.PRIVATE_IP_1) and not row[1].startswith(config.PRIVATE_IP_2),
+                        "LARGE_PACKET": lambda row: int(row[5]) > 5000,
+                        "SENSITIVE_PORT": lambda row: row[3] in config.SENSITIVE_PORT,
+                        "NIGHT_ACTIVITY": lambda row: 0 <= int(row[0][11:13]) < 6}
 
     return suspicion_checks
 
 
-def check_rows_suspicions(row, external_ips):
-    suspicion_checks = analyze_all_logs(row, external_ips)
+def check_rows_suspicions(row, suspicion_checks):
     suspicious_names = filter(lambda key: suspicion_checks[key](row), suspicion_checks.keys())
     return list(suspicious_names)
 
-def check_all_rows_suspicion_with_more_then_1(list_of_rows):
-    external_ips = set(checks.extract_external_ip(list_of_rows))
-    checks_dict = analyze_all_logs(None, external_ips)
-    all_suspicions = list(map(lambda row: check_rows_suspicions(row, checks_dict), list_of_rows))
-    get_over_one_sus = list(filter(lambda row: len(row) > 0, all_suspicions))
-    return get_over_one_sus
 
+def check_all_rows_suspicion_with_more_then_1(line_generator, suspicion_checks):
+    for row in line_generator:
+        if len(check_rows_suspicions(row, suspicion_checks)) > 0:
+            yield row
+
+
+def line_paired_with_suspicions(suspicious_generator, suspicion_checks):
+    for row in suspicious_generator:
+        suspicions = check_rows_suspicions(row, suspicion_checks)
+        yield row, suspicions
+
+
+def count_suspicious_lines(suspicion_generator):
+    count = 0
+    for row in suspicion_generator:
+        count += 1
+    return count
