@@ -57,9 +57,7 @@ def convert_size_from_byte_to_kb(list_of_rows):
     return list(kb)
 
 
-def analyze_all_logs(list_of_rows):
-    external_ips = set(checks.extract_external_ip(list_of_rows))
-
+def analyze_all_logs(row, external_ips):
     suspicion_checks = {"EXTERNAL_IP": lambda row: True if row[1] in external_ips else False,
                         "LARGE_PACKET": lambda row: True if int(row[5]) > 5000 else False,
                         "SENSITIVE_PORT": lambda row: True if row[3] in config.SENSITIVE_PORT else False,
@@ -68,7 +66,15 @@ def analyze_all_logs(list_of_rows):
     return suspicion_checks
 
 
-def check_rows_suspicions(row, suspicion_checks):
+def check_rows_suspicions(row, external_ips):
+    suspicion_checks = analyze_all_logs(row, external_ips)
     suspicious_names = filter(lambda key: suspicion_checks[key](row), suspicion_checks.keys())
     return list(suspicious_names)
+
+def check_all_rows_suspicion_with_more_then_1(list_of_rows):
+    external_ips = set(checks.extract_external_ip(list_of_rows))
+    checks_dict = analyze_all_logs(None, external_ips)
+    all_suspicions = list(map(lambda row: check_rows_suspicions(row, checks_dict), list_of_rows))
+    get_over_one_sus = list(filter(lambda row: len(row) > 0, all_suspicions))
+    return get_over_one_sus
 
