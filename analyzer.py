@@ -49,3 +49,8 @@ def get_all_ips_with_at_list_2_suspicion2(sus_map):
 def extract_hour(list_of_rows):
     hour = map(lambda x: int(x[0][11:13]), list_of_rows)
     return list(hour)
+
+
+def convert_size_from_byte_to_kb(list_of_rows):
+    kb = map(lambda x: int(x[5]) / 1024, list_of_rows)
+    return list(kb)
