@@ -81,3 +81,10 @@ def line_paired_with_suspicions(suspicious_generator, suspicion_checks):
     for row in suspicious_generator:
         suspicions = check_rows_suspicions(row, suspicion_checks)
         yield row, suspicions
+
+
+def count_suspicious_lines(suspicion_generator):
+    count = 0
+    for row in suspicion_generator:
+        count += 1
+    return count
