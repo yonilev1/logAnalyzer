@@ -1,6 +1,7 @@
 import checks
 from collections import Counter, defaultdict
 import config
+import reader
 
 number_of_lines = 0
 number_of_suspicious_lines = 0
@@ -98,7 +99,11 @@ def check_rows_suspicions(row, suspicion_checks):
 
 def check_all_rows_suspicion_with_more_then_1(line_generator, suspicion_checks):
     for row in line_generator:
-        if len(check_rows_suspicions(row, suspicion_checks)) > 0:
+        sus = check_rows_suspicions(row, suspicion_checks)
+        if len(sus) == 0:
+            update_count([])
+        else:
+            update_count(sus)
             yield row
 
 
@@ -113,3 +118,17 @@ def count_suspicious_lines(suspicion_generator):
     for row in suspicion_generator:
         count += 1
     return count
+
+
+def log_analyzer(file_path):
+    suspicion_checks = analyze_all_logs()
+    raw_lines_generator = reader.read_log_file(file_path)
+    only_suspicious_generator = check_all_rows_suspicion_with_more_then_1(raw_lines_generator,
+                                                                                   suspicion_checks)
+    final_generator = line_paired_with_suspicions(only_suspicious_generator, suspicion_checks)
+
+
+    suspicious_ips_dict = defaultdict(set)
+    for row, suspicions in final_generator:
+        suspicious_ips_dict[row[1]].update(suspicions)
+    return suspicious_ips_dict
