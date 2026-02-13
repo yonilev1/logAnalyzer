@@ -2,6 +2,31 @@ import checks
 from collections import Counter, defaultdict
 import config
 
+number_of_lines = 0
+number_of_suspicious_lines = 0
+suspicion_counts = {
+    "EXTERNAL_IP": 0,
+    "LARGE_PACKET": 0,
+    "SENSITIVE_PORT": 0,
+    "NIGHT_ACTIVITY": 0
+}
+
+
+def update_count(rows_sus_list):
+    global number_of_lines
+    global number_of_suspicious_lines
+    global suspicion_counts
+
+    number_of_lines += 1
+    if rows_sus_list:
+        if len(rows_sus_list) > 0:
+            number_of_suspicious_lines += 1
+
+            for sus in rows_sus_list:
+                if sus in suspicion_counts:
+                    suspicion_counts[sus] += 1
+
+
 def is_packet_normal(list_of_rows):
     large_rows = checks.extract_rows_over_5000_bytes(list_of_rows)
     packet_abnormality = ["LARGE" if row in large_rows else "NORMAL" for row in list_of_rows]
