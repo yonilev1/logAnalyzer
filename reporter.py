@@ -18,3 +18,10 @@ def generate_report(suspicious_dict):
     print("IPs with high level risk (3+ suspicions):")
     for key, value in three_sus.items():
         print(f"{key}: {value}")
+
+
+def save_report(report):
+    with open("log_report.txt", "a") as f:
+        f.write(report)
+        f.write("\n")
+
